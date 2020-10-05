@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans" rel="stylesheet" />
+    <title>Document</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Open Sans", sans-serif;
+      }
+      body {
+        background-color: #f4f5f7;
+        font-size: 15px;
+      }
+      .main-section {
+        padding: 2em 0;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .main-section input {
+        padding: 0.5em;
+        font-size: 1.5em;
+        border-radius: 0.5em;
+        border: solid 0.1em #2f2e41;
+        outline: none;
+      }
+      .input-container {
+        display: grid;
+        grid-template-columns: 5fr 1fr;
+        gap: 1em;
+        padding: 3em 1em;
+        border-radius: 0.5em;
+        border: solid 0.1em #2f2e41;
+      }
+      button {
+        width: 100%;
+        font-size: 1.5em;
+        border-radius: 0.5em;
+        outline: none;
+        cursor: pointer;
+        background-color: #536dfe;
+        border: none;
+        color: #f1f1f1;
+      }
+      .result-container {
+        position: relative;
+        display: grid;
+        grid-template-columns: 2fr 2fr 0.75fr;
+        padding: 3em 1em;
+        align-content: center;
+      }
+      .result-container a,
+      .result-container p {
+        font-size: 1.5em;
+      }
+      input#shortUrlResult {
+        position: absolute;
+        z-index: -1;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="main-section">
+      <div class="container">
+        <!-- <img src="images/undraw_link_shortener_mvf6.svg" alt="" /> -->
+        <div class="input-container">
+          <input type="text" placeholder="URL" id="inputUrl" />
+          <button id="sendData">Send</button>
+        </div>
+        <div class="result-container">
+          <input style="opacity: 0" type="text" id="shortUrlResult" />
+          <p id="originalUrl"></p>
+          <a id="shortUrl"></a>
+          <button id="copyResultButton">Copy URL</button>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <div class="container">
+        <p>URL Shortener by Tatak</p>
+      </div>
+    </footer>
+    <script>
+      const sendData = document.getElementById("sendData");
+      const shortUrlResult = document.getElementById("shortUrlResult");
+      const shortUrl = document.getElementById("shortUrl");
+      const copyResultButton = document.getElementById("copyResultButton");
+      const originalUrl = document.getElementById("originalUrl");
+
+      const urlShortener = (e) => {
+        const req = new XMLHttpRequest();
+        const baseUrl = "https://rel.ink/api/links/";
+        const data = JSON.stringify({
+          url: e,
+        });
+        req.open("POST", baseUrl, true);
+        req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        req.onload = function () {
+          tampilData(JSON.parse(this.responseText));
+        };
+        req.send(data);
+        return false;
+      };
+
+      const checkInput = () => {
+        const inputUrl = document.getElementById("inputUrl").value;
+        if (inputUrl === "") {
+          alert("Data Kosong !!!!");
+        } else {
+          urlShortener(inputUrl);
+        }
+      };
+
+      const tampilData = (data) => {
+        const resultBaseUrl = "https://rel.ink/";
+        shortUrlResult.value = `${resultBaseUrl}${data.hashid}`;
+        shortUrl.innerHTML = `${resultBaseUrl}${data.hashid}`;
+        shortUrl.setAttribute("href", `${resultBaseUrl}${data.hashid}`);
+        shortUrl.setAttribute("target", "_blank");
+        originalUrl.innerHTML = data.url;
+      };
+
+      copyResultButton.addEventListener("click", () => {
+        shortUrlResult.select();
+        document.execCommand("copy");
+      });
+
+      sendData.addEventListener("click", checkInput);
+    </script>
+  </body>
+</html>
