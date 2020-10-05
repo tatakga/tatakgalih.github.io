@@ -1,0 +1,1 @@
+folder ini akan berisi latihan latihan sederhana javascript
